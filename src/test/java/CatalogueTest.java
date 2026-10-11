@@ -2,7 +2,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CatalogueTest {
-    @Test void emprunt_nominal() {
+    // throws : emprunter() est une exception checked
+    @Test void emprunt_nominal() throws DocumentIndisponibleException {
         Livre l = new Livre("Clean Code", 2008, "R. Martin", 464);
         l.emprunter();
         assertFalse(l.estDisponible());
@@ -10,10 +11,20 @@ class CatalogueTest {
         assertTrue(l.estDisponible());
     }
 
-    @Test void double_emprunt_leve_une_exception() {
+    @Test void double_emprunt_leve_une_exception_metier() throws DocumentIndisponibleException {
         Livre l = new Livre("Refactoring", 1999, "M. Fowler", 448);
         l.emprunter();
-        assertThrows(IllegalStateException.class, l::emprunter);
+        DocumentIndisponibleException ex =
+                assertThrows(DocumentIndisponibleException.class, l::emprunter);
+        assertTrue(ex.getMessage().contains("Refactoring"));
+    }
+
+    @Test void double_emprunt_dvd() throws DocumentIndisponibleException {
+        Dvd d = new Dvd("Inception", 2010, 148);
+        d.emprunter();
+        DocumentIndisponibleException ex =
+                assertThrows(DocumentIndisponibleException.class, d::emprunter);
+        assertTrue(ex.getMessage().contains("Inception"));
     }
 
     @Test void recherche_infructueuse() {
