@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,5 +38,44 @@ class EmpruntManagerTest {
         assertFalse(l.estDisponible());
         l.rendre();
         assertDoesNotThrow(() -> m.emprunter("Dune"));
+    }
+
+    @Test void quota_refuse_un_emprunt_sans_emprunter_le_document() throws MediathequeException {
+        ConfigurationMediatheque configuration = ConfigurationMediatheque.getInstance();
+        int quotaInitial = configuration.getNbMaxEmprunts();
+        try {
+            configuration.setNbMaxEmprunts(1);
+
+            Livre premier = new Livre("Dune", 1965, "F. Herbert", 612);
+            Livre second = new Livre("Fondation", 1951, "I. Asimov", 255);
+            Catalogue<Document> catalogue = new Catalogue<>();
+            catalogue.ajouter(premier);
+            catalogue.ajouter(second);
+            EmpruntManager manager = new EmpruntManager(catalogue);
+
+            manager.emprunter("Dune");
+            DocumentIndisponibleException exception = assertThrows(
+                    DocumentIndisponibleException.class,
+                    () -> manager.emprunter("Fondation"));
+
+            assertTrue(exception.getMessage().contains("quota d'emprunts atteint"));
+            assertTrue(second.estDisponible());
+        } finally {
+            configuration.setNbMaxEmprunts(quotaInitial);
+        }
+    }
+
+    @Test void date_retour_utilise_la_duree_configuree() {
+        ConfigurationMediatheque configuration = ConfigurationMediatheque.getInstance();
+        int dureeInitiale = configuration.getDureeEmpruntJours();
+        try {
+            configuration.setDureeEmprunt(14);
+            EmpruntManager manager = new EmpruntManager(new Catalogue<>());
+
+            assertEquals(LocalDate.of(2026, 11, 9),
+                    manager.dateRetour(LocalDate.of(2026, 10, 26)));
+        } finally {
+            configuration.setDureeEmprunt(dureeInitiale);
+        }
     }
 }
