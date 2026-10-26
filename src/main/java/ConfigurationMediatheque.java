@@ -1,15 +1,10 @@
 public class ConfigurationMediatheque {
-    private int dureeEmpruntJours = 21;
-    private int nbMaxEmprunts = 5;
+    private final int dureeEmpruntJours;
+    private final int nbMaxEmprunts;
 
-    private ConfigurationMediatheque() { }
-
-    private static class Holder {
-        private static final ConfigurationMediatheque INSTANCE = new ConfigurationMediatheque();
-    }
-
-    public static ConfigurationMediatheque getInstance() {
-        return Holder.INSTANCE;
+    public ConfigurationMediatheque(int dureeEmpruntJours, int nbMaxEmprunts) {
+        this.dureeEmpruntJours = dureeEmpruntJours;
+        this.nbMaxEmprunts = nbMaxEmprunts;
     }
 
     public int getDureeEmpruntJours() {
@@ -18,13 +13,5 @@ public class ConfigurationMediatheque {
 
     public int getNbMaxEmprunts() {
         return nbMaxEmprunts;
-    }
-
-    public void setDureeEmprunt(int jours) {
-        this.dureeEmpruntJours = jours;
-    }
-
-    public void setNbMaxEmprunts(int n) {
-        this.nbMaxEmprunts = n;
     }
 }

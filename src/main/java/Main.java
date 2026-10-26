@@ -1,16 +1,18 @@
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /** Point d'entree : petit scenario de demonstration/test a la main de la mediatheque. */
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws MediathequeException {
         // 1. Catalogue + documents
         Catalogue<Document> catalogue = new Catalogue<>();
-        List<Document> docs = new ArrayList<>();
-        docs.add(new Livre("Les Miserables", 1862, "Victor Hugo", 1488));
-        docs.add(new Dvd("Inception", 2010, 148));
-        docs.add(new Revue("Science et Vie", 2024, 1285));
+        // L'unicite de la configuration est une decision d'assemblage prise ici.
+        var config = new ConfigurationMediatheque(21, 5);
+        var manager = new EmpruntManager(catalogue, config);
+        List<Document> docs = new ImporteurCsv().importer(List.of(
+                "livre;Les Miserables;1862;Victor Hugo;1488",
+                "dvd;Inception;2010;148",
+                "revue;Science et Vie;2024;1285"));
         docs.forEach(catalogue::ajouter);
 
         System.out.println("=== Catalogue (trie par titre) ===");
@@ -27,7 +29,6 @@ public class Main {
 
         // 3. Emprunts + exceptions metier
         System.out.println("\n=== Emprunts ===");
-        EmpruntManager manager = new EmpruntManager(catalogue);
         try (RapportEmprunt rapportEmprunt = new RapportEmprunt()) {
             String[] demandes = {"Inception", "Inception", "Science et Vie", "Dune"};
             for (String titre : demandes) {

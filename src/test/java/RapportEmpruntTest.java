@@ -5,7 +5,7 @@ class RapportEmpruntTest {
     @Test void rapport_ferme_meme_si_un_emprunt_echoue() {
         Catalogue<Document> c = new Catalogue<>();
         c.ajouter(new Livre("Clean Code", 2008, "R. Martin", 464));
-        EmpruntManager m = new EmpruntManager(c);
+        EmpruntManager m = new EmpruntManager(c, new ConfigurationMediatheque(21, 5));
         RapportEmprunt rapport = new RapportEmprunt();
 
         assertThrows(DocumentIndisponibleException.class, () -> {
