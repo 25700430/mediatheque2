@@ -123,7 +123,7 @@ L'ajout de `RemiseBlackFriday` (-30 %) ne nécessite de modifier aucune classe m
 
 ### 5.3
 
-Créer un itérateur concret, par exemple `IterateurInverse`, qui parcourt les indices de `taille - 1` à `0`, puis ajouter à `Panier` une méthode telle que `aRebours()` qui retourne un `Iterable<Produit>` créant cet itérateur à chaque parcours. Le tableau reste encapsulé et les clients peuvent utiliser une boucle for-each sans connaître son stockage. Cela respecte l'**OCP** : on ajoute un nouveau mode de parcours sans modifier l'itérateur existant ni les clients ; cela maintient aussi la séparation des responsabilités entre panier et parcours.
+`Panier.iterateurInverse()` retourne un itérateur concret qui parcourt les indices de `taille - 1` à `0`, sans exposer le tableau. Ce nouveau mode de parcours respecte l'**OCP** en ajoutant une variante sans modifier l'itérateur principal ni les clients qui choisissent de l'utiliser ; il sépare aussi le parcours de la représentation interne.
 
 ### 5.4
 
