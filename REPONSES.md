@@ -66,3 +66,9 @@ Exemple d'entrelacement qui produit deux références distinctes :
 | t4 | — | Termine, affecte B, puis lit B pour la retourner | B |
 
 Le client reçoit A de T1 et B de T2 ; le `Set` contient alors deux objets. Le champ statique ne conserve finalement que B, mais cela ne change pas la référence A déjà retournée à T1.
+
+## Question 3.2
+
+`JournalApplication` implémente `Journal` et utilise l'idiome du holder : la classe interne `Holder` initialise l'instance unique à la première invocation de `getInstance()`, avec une initialisation sûre vis-à-vis des threads. Les messages sont conservés dans une `CopyOnWriteArrayList`; `getMessages()` en renvoie une copie non modifiable.
+
+Les tests JUnit vérifient que deux appels à `getInstance()` renvoient le même objet (`assertSame`) et que 100 threads ajoutent chacun un message, faisant augmenter la taille de 100.
