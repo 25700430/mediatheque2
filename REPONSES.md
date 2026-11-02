@@ -72,3 +72,13 @@ Le client reçoit A de T1 et B de T2 ; le `Set` contient alors deux objets. Le c
 `JournalApplication` implémente `Journal` et utilise l'idiome du holder : la classe interne `Holder` initialise l'instance unique à la première invocation de `getInstance()`, avec une initialisation sûre vis-à-vis des threads. Les messages sont conservés dans une `CopyOnWriteArrayList`; `getMessages()` en renvoie une copie non modifiable.
 
 Les tests JUnit vérifient que deux appels à `getInstance()` renvoient le même objet (`assertSame`) et que 100 threads ajoutent chacun un message, faisant augmenter la taille de 100.
+
+## Question 3.3
+
+`JournalEnum` est l'implémentation enum du contrat `Journal`; son unique constante `INSTANCE` porte les messages.
+
+| Critère | Holder (`JournalApplication`) | Enum (`JournalEnum`) |
+|---|---|---|
+| Création paresseuse | Oui : le holder n'est initialisé qu'au premier appel à `getInstance()`. | Pas via un holder distinct : `INSTANCE` est créée lors de l'initialisation de la classe enum, elle-même différée jusqu'à son premier usage. |
+| Sérialisation | Pas automatiquement protégée : une implémentation sérialisable doit gérer la désérialisation pour préserver l'unicité. | Garantie par Java : la sérialisation des enums préserve l'instance unique. |
+| Possibilité d'hériter d'une classe | Oui : une classe singleton peut étendre une classe de base si son constructeur est accessible. | Impossible : une enum étend déjà `java.lang.Enum` et ne peut pas étendre une autre classe. |
