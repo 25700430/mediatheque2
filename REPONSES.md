@@ -51,3 +51,18 @@ Une conception corrigée expose un contrat commun `Forme` avec `aire()`, puis fa
 - **ConcreteIterator** : l'itérateur anonyme créé par `Panier.iterator()` ; `FiltreDisponibles` est également un itérateur concret qui enveloppe un autre `Iterator<Produit>`.
 
 Le patron favorise le **SRP** en séparant le parcours du stockage du panier ; l'**ISP**, car les clients utilisent les petits contrats `Iterable` et `Iterator` plutôt qu'une API exposant le tableau ; et le **DIP**, car `FiltreDisponibles` dépend de l'abstraction `Iterator`, pas d'une classe de collection concrète. Il favorise aussi l'**OCP** : on peut ajouter d'autres itérateurs ou filtres sans changer le code client qui parcourt un `Iterable`. Les implémentations restent substituables si elles respectent le contrat de `Iterator`.
+
+## Question 3.1
+
+Le nombre d'instances distinctes observées n'est pas fixe : lors de dix exécutions du test, j'en ai observé de 16 à 20. Il varie selon l'ordonnancement des threads et peut être supérieur à 1 (au plus 20 threads peuvent chacune ajouter une référence distincte). Le délai de 50 ms rend plus probable que plusieurs threads passent le test `instance == null` avant qu'une instance soit publiée, sans garantir un résultat précis à chaque exécution.
+
+Exemple d'entrelacement qui produit deux références distinctes :
+
+| Instant | Thread T1 | Thread T2 | `instance` |
+|---|---|---|---|
+| t1 | Vérifie `instance == null` : vrai, commence la construction de A | — | `null` |
+| t2 | Dort dans le constructeur de A | Vérifie `instance == null` : vrai, commence la construction de B | `null` |
+| t3 | Termine et affecte A, puis lit A pour la retourner | Dort dans le constructeur de B | A |
+| t4 | — | Termine, affecte B, puis lit B pour la retourner | B |
+
+Le client reçoit A de T1 et B de T2 ; le `Set` contient alors deux objets. Le champ statique ne conserve finalement que B, mais cela ne change pas la référence A déjà retournée à T1.
