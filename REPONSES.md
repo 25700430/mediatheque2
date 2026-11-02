@@ -90,3 +90,17 @@ Les tests JUnit vérifient que deux appels à `getInstance()` renvoient le même
 3. **Effets de bord difficiles à contrôler** : chaque test déclenche l'écriture réelle dans le journal ; il devient plus difficile de simuler une erreur, de vérifier précisément l'interaction ou d'exécuter le test indépendamment.
 
 Injecter une dépendance de type `Journal` dans `CommandeService` permettrait de fournir un faux journal propre à chaque test.
+
+## Partie 4
+
+### 4.1
+
+`CommandeService` reçoit `DepotCommandes`, `Notificateur` et `Journal` par constructeur. Il parcourt les produits de l'`Iterable` avec une boucle for-each, applique la remise, enregistre et notifie la commande, puis écrit le message demandé dans le journal. `Main` récupère une seule fois `JournalApplication.getInstance()` et passe cette instance au service ; avec `panier.disponibles()` et `RemisePremium`, le total est `112,5`.
+
+### 4.2
+
+`CommandeServiceTest` utilise `DepotFactice`, `NotificateurFactice` et `JournalFactice` pour vérifier le total `112,5`, l'appel unique au dépôt et au notificateur, ainsi que le message `Commande traitee : client@example.com= 112.5`.
+
+### 4.3
+
+L'ajout de `RemiseBlackFriday` (-30 %) ne nécessite de modifier aucune classe métier existante : il suffit d'ajouter cette nouvelle stratégie et son test. Cela illustre le **principe ouvert/fermé (OCP)** : le système est ouvert à l'ajout d'une règle de remise et fermé à la modification du service existant. Le total attendu est `87,5`.
