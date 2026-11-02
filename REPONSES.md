@@ -19,3 +19,9 @@ La méthode `traiterCommande` assume plusieurs responsabilités distinctes :
 - **DIP (inversion des dépendances)** : le service dépend directement de `FileWriter` et de `System.out`, donc remplacer le fichier par une base de données ou la sortie console par un service de notification obligerait à modifier son code métier.
 
 Les violations de **LSP** et d'**ISP** ne sont pas établies par cet exemple, qui ne présente ni hiérarchie de types ni interfaces à découper.
+
+## Question 1.2
+
+L'interface `Appareil` viole le **principe de ségrégation des interfaces (ISP)**, car elle impose à une imprimante basique des opérations de numérisation et de fax qu'elle ne sait pas effectuer ; un client qui appelle `numeriser` sur cette imprimante reçoit une `UnsupportedOperationException`. Cela enfreint aussi le **principe de substitution de Liskov (LSP)** : `ImprimanteBasique` ne peut pas remplacer correctement un `Appareil` pour un client qui utilise toutes les opérations promises par l'interface.
+
+La conception corrigée sépare ces capacités dans les interfaces `Imprimante`, `Numeriseur` et `Telecopieur`. `ImprimanteBasique` implémente uniquement `Imprimante`, tandis que `MultifonctionBureau` implémente les trois interfaces et fournit les trois opérations.
