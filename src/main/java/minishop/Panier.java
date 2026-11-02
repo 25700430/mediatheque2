@@ -14,6 +14,10 @@ public class Panier implements Iterable<Produit> {
         articles[taille++] = produit;
     }
 
+    public Iterable<Produit> disponibles() {
+        return () -> new FiltreDisponibles(iterator());
+    }
+
     @Override
     public Iterator<Produit> iterator() {
         return new Iterator<>() {
