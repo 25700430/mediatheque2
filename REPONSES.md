@@ -37,3 +37,8 @@ Avec `new Rectangle()`, `tester` affiche `20` : la largeur vaut 5 et la hauteur 
 Cette conception viole le **principe de substitution de Liskov (LSP)** : `Carre` hérite de `Rectangle` mais ses setters ne respectent pas le comportement attendu d'un rectangle, dont les dimensions sont indépendantes.
 
 Une conception corrigée expose un contrat commun `Forme` avec `aire()`, puis fait implémenter ce contrat par un `Rectangle` et un `Carre` indépendants. Leurs dimensions sont définies au constructeur et immuables, évitant ainsi qu'une sous-classe ne change le comportement des setters du rectangle.
+
+## Question 2.1
+
+1. Le tableau interne est exposé directement : un appelant peut remplacer ou supprimer des éléments, voire modifier des cases au-delà de `taille`, ce qui contourne `ajouter` et peut corrompre l'état du panier.
+2. Les clients dépendent de la représentation interne (un tableau de taille fixe) et doivent gérer eux-mêmes les cases `null` après le dernier article ; remplacer le tableau par une autre structure imposerait de modifier ces clients.
