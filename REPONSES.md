@@ -42,3 +42,12 @@ Une conception corrigée expose un contrat commun `Forme` avec `aire()`, puis fa
 
 1. Le tableau interne est exposé directement : un appelant peut remplacer ou supprimer des éléments, voire modifier des cases au-delà de `taille`, ce qui contourne `ajouter` et peut corrompre l'état du panier.
 2. Les clients dépendent de la représentation interne (un tableau de taille fixe) et doivent gérer eux-mêmes les cases `null` après le dernier article ; remplacer le tableau par une autre structure imposerait de modifier ces clients.
+
+## Question 2.2
+
+- **Aggregate** : l'interface `Iterable<Produit>`, qui permet d'obtenir un itérateur.
+- **ConcreteAggregate** : `Panier`, qui stocke les produits et fournit `iterator()`.
+- **Iterator** : l'interface `Iterator<Produit>`, qui définit `hasNext()` et `next()`.
+- **ConcreteIterator** : l'itérateur anonyme créé par `Panier.iterator()` ; `FiltreDisponibles` est également un itérateur concret qui enveloppe un autre `Iterator<Produit>`.
+
+Le patron favorise le **SRP** en séparant le parcours du stockage du panier ; l'**ISP**, car les clients utilisent les petits contrats `Iterable` et `Iterator` plutôt qu'une API exposant le tableau ; et le **DIP**, car `FiltreDisponibles` dépend de l'abstraction `Iterator`, pas d'une classe de collection concrète. Il favorise aussi l'**OCP** : on peut ajouter d'autres itérateurs ou filtres sans changer le code client qui parcourt un `Iterable`. Les implémentations restent substituables si elles respectent le contrat de `Iterator`.
