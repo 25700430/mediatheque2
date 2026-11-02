@@ -104,3 +104,27 @@ Injecter une dépendance de type `Journal` dans `CommandeService` permettrait de
 ### 4.3
 
 L'ajout de `RemiseBlackFriday` (-30 %) ne nécessite de modifier aucune classe métier existante : il suffit d'ajouter cette nouvelle stratégie et son test. Cela illustre le **principe ouvert/fermé (OCP)** : le système est ouvert à l'ajout d'une règle de remise et fermé à la modification du service existant. Le total attendu est `87,5`.
+
+## Partie 5 — Questions de synthèse
+
+### 5.1
+
+| Principe | Où dans le TP ? |
+|---|---|
+| **S — Responsabilité unique** | `CommandeService` orchestre la commande ; les remises, le dépôt (`DepotFichier`) et la notification (`NotificateurConsole`) ont des classes séparées. |
+| **O — Ouvert/fermé** | `RegleRemise` permet d'ajouter `RemiseBlackFriday` sans modifier `CommandeService` ni les autres remises. |
+| **L — Substitution de Liskov** | `Carre` et `Rectangle` implémentent tous deux `Forme` sans relation d'héritage qui violerait le contrat ; les stratégies de remise sont aussi interchangeables via `RegleRemise`. |
+| **I — Ségrégation des interfaces** | `Imprimante`, `Numeriseur` et `Telecopieur` séparent les capacités ; une imprimante basique n'implémente que celle qu'elle fournit. |
+| **D — Inversion des dépendances** | `CommandeService` dépend des abstractions `DepotCommandes`, `Notificateur` et `Journal`, injectées par son constructeur ; les tests fournissent des doublures. |
+
+### 5.2
+
+`Main` est le point de composition de l'application : il choisit les implémentations concrètes et récupère le singleton une fois pour l'injecter. `CommandeService`, qui porte la logique métier, dépend uniquement de l'interface `Journal`; il peut ainsi recevoir un `JournalFactice` dans les tests sans accéder à l'état global du singleton.
+
+### 5.3
+
+Créer un itérateur concret, par exemple `IterateurInverse`, qui parcourt les indices de `taille - 1` à `0`, puis ajouter à `Panier` une méthode telle que `aRebours()` qui retourne un `Iterable<Produit>` créant cet itérateur à chaque parcours. Le tableau reste encapsulé et les clients peuvent utiliser une boucle for-each sans connaître son stockage. Cela respecte l'**OCP** : on ajoute un nouveau mode de parcours sans modifier l'itérateur existant ni les clients ; cela maintient aussi la séparation des responsabilités entre panier et parcours.
+
+### 5.4
+
+Non : le singleton garantit l'unicité de l'instance, pas à lui seul la sûreté de son état mutable. `JournalApplication` utilise une `CopyOnWriteArrayList`, qui rend sûres les écritures concurrentes simples et les lectures via `getMessages()` ; c'est pourquoi les 100 threads du test peuvent ajouter chacun un message sans perte. Avec une liste non synchronisée, ces accès concurrents pourraient perdre des mises à jour ou provoquer des erreurs. Pour des opérations composées (par exemple « vérifier puis ajouter »), une synchronisation supplémentaire pourrait rester nécessaire.
