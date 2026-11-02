@@ -82,3 +82,11 @@ Les tests JUnit vérifient que deux appels à `getInstance()` renvoient le même
 | Création paresseuse | Oui : le holder n'est initialisé qu'au premier appel à `getInstance()`. | Pas via un holder distinct : `INSTANCE` est créée lors de l'initialisation de la classe enum, elle-même différée jusqu'à son premier usage. |
 | Sérialisation | Pas automatiquement protégée : une implémentation sérialisable doit gérer la désérialisation pour préserver l'unicité. | Garantie par Java : la sérialisation des enums préserve l'instance unique. |
 | Possibilité d'hériter d'une classe | Oui : une classe singleton peut étendre une classe de base si son constructeur est accessible. | Impossible : une enum étend déjà `java.lang.Enum` et ne peut pas étendre une autre classe. |
+
+## Question 3.4
+
+1. **Dépendance impossible à remplacer facilement** : le test ne peut pas injecter un faux journal pour vérifier les messages sans utiliser le singleton global.
+2. **État partagé entre tests** : les messages persistent dans la même instance, ce qui peut rendre les tests dépendants de leur ordre et provoquer des résultats non isolés.
+3. **Effets de bord difficiles à contrôler** : chaque test déclenche l'écriture réelle dans le journal ; il devient plus difficile de simuler une erreur, de vérifier précisément l'interaction ou d'exécuter le test indépendamment.
+
+Injecter une dépendance de type `Journal` dans `CommandeService` permettrait de fournir un faux journal propre à chaque test.
